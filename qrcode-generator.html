@@ -22,12 +22,12 @@
 			longitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
 			colorlight:{value:"#ffffff",validate:function(v) {
 				var darkcol=$("#node-input-colordark").val() ? parseInt($("#node-input-colordark").val().replace(/^#/, ''), 16) : parseInt(this.colordark.replace(/^#/, ''), 16);
-				return darkcol < parseInt(v.replace(/^#/, ''), 16);
+				return darkcol + 50 < parseInt(v.replace(/^#/, ''), 16);
 			}},
 			colordark:{value:"#000000",validate:function(v) {
 				var lightcol=$("#node-input-colorlight").val() ? parseInt($("#node-input-colorlight").val().replace(/^#/, ''), 16) : parseInt(this.colorlight.replace(/^#/, ''), 16);
-				console.log(this.colordark + " - " + v);
-				return parseInt(v.replace(/^#/, ''), 16) < lightcol;
+				// console.log(this.colordark + " - " + v);
+				return parseInt(v.replace(/^#/, ''), 16) + 50 < lightcol;
 			}}
 		},
 		credentials: {
