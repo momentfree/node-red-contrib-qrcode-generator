@@ -7,7 +7,7 @@ Install from PALETTE Manager or run the following command in your NODE-RED user 
 npm install node-red-contrib-qrcode-generator
 ```
 ## Usage
-The node processes string to generate QRCode. Use the editor as an helper to forge action text string (link, sms, email, wifi etc.) or post your custom string using `msg.qrcodeinput` input property. [Here](https://github.com/zxing/zxing/wiki/Barcode-Contents) is documentation to create your custom action text. Remember QRCode are specific for some devices for example Wi-Fi Network config works only on Android or iOS 11+. There are a lot of different standard on actionable text, the helper (editor configuration), aims to cover some of the most used. Finally node returns DataUri format image in `msg.payload`.
+Processes string to generate QRCode. Use the editor as an helper to forge action text string (link, sms, wifi etc.) or post your custom string using `msg.qrcodeinput` input property. [Here](https://github.com/zxing/zxing/wiki/Barcode-Contents) is documentation to create your custom action text. Remember QRCode are specific for some devices for example Wi-Fi Network config works only on Android or iOS 11+. There are a lot of different standards on actionable text, the helper (editor configuration), aims to cover some of the most used. Finally node returns DataUri format image in `msg.payload`.
 
 You can render DataUri result, in html page with img element, using template node with mustache:
 ```
@@ -22,7 +22,7 @@ You can use different colors but keep in mind that light-color must be ligther t
 ### Input
 `msg.qrcodeinput` [Custom](https://github.com/zxing/zxing/wiki/Barcode-Contents) string, it will be used instead of editor configuration. e.g.:
 ```
-msg.qrcodeinput = 'sms:+18005551212';
+msg.qrcodeinput = 'mailto:someone@yoursite.com';
 ```
 creates QRcode with action text for sending sms to a specific number.
 
