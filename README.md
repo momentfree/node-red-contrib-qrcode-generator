@@ -20,7 +20,7 @@ or you can link output to [image viewer node](https://flows.nodered.org/node/nod
 You can use different colors but keep in mind that light-color must be ligther than dark-color.
 
 ### Input
-`msg.qrcodeinput` custom string, it will be used instead of editor configuration. e.g.:
+`msg.qrcodeinput` [Custom](https://github.com/zxing/zxing/wiki/Barcode-Contents) string, it will be used instead of editor configuration. e.g.:
 ```
 msg.qrcodeinput = 'sms:+18005551212';
 ```
