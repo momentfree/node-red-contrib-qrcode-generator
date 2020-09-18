@@ -24,7 +24,7 @@ You can use different colors but keep in mind that light-color must be ligther t
 ```
 msg.qrcodeinput = 'mailto:someone@yoursite.com';
 ```
-creates QRcode with action text for sending sms to a specific number.
+creates QRcode with action text for sending email to a specific address.
 
 ### Output
 `msg.payload` Image in [DataURI](https://en.wikipedia.org/wiki/Data_URI_scheme) format.
