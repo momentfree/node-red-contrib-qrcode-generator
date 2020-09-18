@@ -1,0 +1,152 @@
+<script type="text/javascript">
+	RED.nodes.registerType('qrcode-generator',{
+		category: 'function',
+		color: '#C0C0C0',
+		defaults: {
+			name: {value:""},
+			qrtype: {value:"text2qr"},
+			text2qrText: {value:""},
+			ssid:{value:"",validate:function(v) { // 32-byte string max or null/empty
+				var byteSize = new Blob([v]).size;
+				return !v || byteSize <= 32;
+			}},
+			hiddenssid:{value:false},
+			wifitype:{value:""},
+			phonenum:{value:"",validate:RED.validators.regex(/^(|(\+)?[0-9]+)$/)},
+			smsphonenum:{value:"",validate:RED.validators.regex(/^(|(\+)?[0-9]+)$/)},
+			smstext:{value:""},
+			mailto:{value:"",validate:RED.validators.regex(/^(|\S+@\S+\.\S+)$/)},
+			mailsubject:{value:""},
+			mailbody:{value:""},
+			latitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
+			longitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
+			colorlight:{value:"#ffffff",validate:function(v) {
+				var darkcol=$("#node-input-colordark").val() ? parseInt($("#node-input-colordark").val().replace(/^#/, ''), 16) : parseInt(this.colordark.replace(/^#/, ''), 16);
+				return darkcol < parseInt(v.replace(/^#/, ''), 16);
+			}},
+			colordark:{value:"#000000",validate:function(v) {
+				var lightcol=$("#node-input-colorlight").val() ? parseInt($("#node-input-colorlight").val().replace(/^#/, ''), 16) : parseInt(this.colorlight.replace(/^#/, ''), 16);
+				console.log(this.colordark + " - " + v);
+				return parseInt(v.replace(/^#/, ''), 16) < lightcol;
+			}}
+		},
+		credentials: {
+			wifipwd: {type:"password"}
+		},
+		inputs:1,
+		outputs:1,
+		icon: "qrcode.png",
+		label: function() {
+			return this.name||"qrcode-gen";
+		},
+		oneditsave: function() {
+		},
+		oneditprepare: function() {
+			// hide all section
+			$(".qrcode-type").hide();
+			var qrtype=$('#node-input-qrtype').val() || "text2qr";
+			$("#node-input-qrtypeselect").val(qrtype);
+			var wifitype=$('#node-input-wifitype').val() || "wep";
+			$("#node-input-wifitypeselect").val(wifitype);
+			// show qrtype section
+			$("#qrcode-type-"+qrtype).show();
+
+			// show selected section
+			$('#node-input-qrtypeselect').change(function() {
+					var typeqr=$('#node-input-qrtypeselect option:selected').attr('value');
+					$('#node-input-qrtype').val(typeqr);
+					$(".qrcode-type").hide();
+					$("#qrcode-type-"+typeqr).show();
+			}.bind(this));
+
+			$('#node-input-wifitypeselect').change(function() {
+					var typewifi=$('#node-input-wifitypeselect option:selected').attr('value');
+					$('#node-input-wifitype').val(typewifi);
+			}.bind(this));
+
+		},
+		paletteLabel: function() {
+			return "qrcode gen";
+		},
+	});
+</script>
+
+<script type="text/html" data-template-name="qrcode-generator">
+
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+
+	<div class="form-row">
+		<label for="node-input-colorlight"><i class="fa fa-paint-brush"></i> Light Color</label>
+		<input type="color" id="node-input-colorlight" style="width: 40px;height: 40px;border: none;">
+		<label style="width:80px"> </label>
+		<span > Dark Color</span>
+		<input type="color" id="node-input-colordark" style="width: 40px;height: 40px;border: none;">
+	</div>
+
+	<div class="form-row">
+		<label for="node-input-qrtypeselect"><i class="fa fa-qrcode"></i> Type</label>
+		<select id="node-input-qrtypeselect" style="width:70%">
+				<option value="text2qr"> Html-Link or Text</option>
+				<option value="wifi2qr">Wifi</option>
+				<option value="phone2qr">Telephone</option>
+				<option value="sms2qr">SMS</option>
+				<option value="email2qr">Email</option>
+				<option value="map2qr">Map point</option>
+		</select>
+		<input type="hidden" id="node-input-qrtype">
+	</div>
+
+	<hr>
+
+	<div class="form-row qrcode-type hidden" id="qrcode-type-text2qr" style="background-color: #eee;padding:10px;">
+		<label for="node-input-text2qrText" style="padding-left: 15px; margin-top: 10px;"><i class="fa fa-link"></i> Text or URL</label>
+		<input type="text" id="node-input-text2qrText" placeholder="https://example.com">
+	</div>
+
+	<div class="form-row qrcode-type hidden" id="qrcode-type-wifi2qr" style="background-color: #eee;padding:10px;">
+		<label for="node-input-wifitypeselect" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-lock"></i> Encryption</label>
+		<select id="node-input-wifitypeselect" style="width:70%">
+				<option value="WEP">WEP</option>
+				<option value="WPA">WPA</option>
+				<option value="nopass">No Password</option>
+		</select>
+		<input type="hidden" id="node-input-wifitype"><br/>
+		<label for="node-input-ssid" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-wifi"></i> SSID</label>
+		<input type="text" id="node-input-ssid" placeholder="SSID"><br/>
+		<input type="checkbox" id="node-input-hiddenssid" style="width: auto;margin-left: 105px;vertical-align: baseline;margin-top: 10px;">
+		<label for="node-input-hiddenssid" style="margin-top: 10px;margin-left: 4px;">Hidden SSID</label><br/>
+		<label for="node-input-wifipwd" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-key"></i> Password</label>
+		<input type="password" id="node-input-wifipwd">
+	</div>
+
+	<div class="form-row qrcode-type hidden" id="qrcode-type-phone2qr" style="background-color: #eee;padding:10px;">
+		<label for="node-input-phonenum" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-phone"></i> Ph.num.</label>
+		<input type="text" id="node-input-phonenum" placeholder="+3912345678">
+	</div>
+
+	<div class="form-row qrcode-type hidden" id="qrcode-type-sms2qr" style="background-color: #eee;padding:10px;">
+		<label for="node-input-smsphonenum" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-phone"></i> Ph.num.</label>
+		<input type="text" id="node-input-smsphonenum" placeholder="+39123456789"><br/>
+		<label for="node-input-smstext" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-commenting-o"></i> Message</label>
+		<input type="text" id="node-input-smstext" placeholder="message goes here">
+	</div>
+
+	<div class="form-row qrcode-type hidden" id="qrcode-type-email2qr" style="background-color: #eee;padding:10px;">
+		<label for="node-input-mailto" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-envelope-o"></i> Mail-To</label>
+		<input type="text" id="node-input-mailto" placeholder="justin@example.com"><br/>
+		<label for="node-input-mailsubject" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;">Subject</label>
+		<input type="text" id="node-input-mailsubject" placeholder="subject goes here "><br/>
+		<label for="node-input-mailbody" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;">Message</label>
+		<input type="text" id="node-input-mailbody" placeholder="message goes here">
+	</div>
+
+	<div class="form-row qrcode-type hidden" id="qrcode-type-map2qr" style="background-color: #eee;padding:10px;">
+		<label for="node-input-latitude" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-arrows-h"></i> Latitude</label>
+		<input type="text" id="node-input-latitude" placeholder="40.71872"><br/>
+		<label for="node-input-longitude" style="padding-left: 15px; margin-right: -15px; margin-top: 10px;"><i class="fa fa-arrows-v"></i> Longitude</label>
+		<input type="text" id="node-input-longitude" placeholder="73.98905">
+	</div>
+</script>

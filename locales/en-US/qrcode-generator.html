@@ -1,0 +1,13 @@
+<script type="text/html" data-help-name="qrcode-generator">
+	<p>Create QRCode from action text. Based on <a href="https://www.npmjs.com/package/node-qrcode" target="_new">node-qrcode</a> module.</p>
+	<h3>Input</h3>
+	<dl class="message-properties">
+		<dt><i>msg.qrcodeinput</i> <span class="property-type">string</span></dt>
+		<dd>Post any valid action text string. Input will be used instead of editor configuration parameters. <a href="https://github.com/zxing/zxing/wiki/Barcode-Contents" target="_new">Learn more on standard action text string</a></dd>
+	</dl>
+	<h3>Output</h3>
+	<dl class="message-properties">
+		<dt><i>msg.payload</i> <span class="property-type">Data URI</span></dt>
+		<dd>Returns a <a href="https://en.wikipedia.org/wiki/Data_URI_scheme" target="_new">DataURI</a> containing a representation of the QRCode image</dd>
+	</dl>
+</script>
