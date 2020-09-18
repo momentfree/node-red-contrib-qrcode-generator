@@ -1,5 +1,5 @@
 # node-red-contrib-qrcode-generator
-Create QRCode from action text. Based on [node-qrcode](https://www.npmjs.com/package/node-qrcode) module.
+Create QRCode from action text. Based on [node-qrcode](https://github.com/soldair/node-qrcode) module.
 
 ## Install
 Install from PALETTE Manager or run the following command in your NODE-RED user directory typically: \~/.node-red
