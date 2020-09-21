@@ -81,10 +81,9 @@ module.exports = function(RED) {
 	}
 
 	function requestQRCode(node,msg,callback){
-		var qrencodemsg;
 		try {
 			node.status({fill:"blue",shape:"dot",text:"molding QRcode.."});
-			qrencodemsg = qrcodeGenerateString(node);
+			node.qrencodemsg = qrcodeGenerateString(node) || "";
 			// Colorize QRCode adding alpha-chan to RGB
 			var alphachan="FF";
 			var opts = {
@@ -98,7 +97,7 @@ module.exports = function(RED) {
 			return;
 		}
 
-		QRCode.toDataURL(qrencodemsg, opts, function (err, dataUri) {
+		QRCode.toDataURL(node.qrencodemsg, opts, function (err, dataUri) {
 			if (err) {
 				callback(err);
 				return;
@@ -127,6 +126,7 @@ module.exports = function(RED) {
 		node.hiddenssid=config.hiddenssid || false;
 		node.colorlight = config.colorlight || "#ffffff";
 		node.colordark = config.colordark || "#000000";
+		node.printstatus=config.printstatus || "";
 
 		node.on('input', function(msg) {
 			// get input & delete it
@@ -142,7 +142,15 @@ module.exports = function(RED) {
 						RED.util.setMessageProperty(msg,"payload",node.dataUri);
 						node.send(msg);
 						// reset node status
-						node.status({});
+						if (!node.printstatus){
+							node.status({});
+						} else {
+							const stringMaxLength = 150;
+							if (node.qrencodemsg.length > stringMaxLength) {
+								node.qrencodemsg = node.qrencodemsg.substring(0,stringMaxLength) + "...";
+							}
+							node.status({fill:"green",shape:"dot",text:node.qrencodemsg});
+						}
 					}
 			});
 		});
