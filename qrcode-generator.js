@@ -15,68 +15,76 @@ module.exports = function(RED) {
 		}
 	}
 
+
+	function qrcodeGenerateString (node){
+		var qrencodemsg="";
+		if(!node.qrcodeinput){
+			// no input, use configuration parameters from editor to create actionable text
+			switch (node.qrtype) {
+				case "text2qr":
+					qrencodemsg=node.text2qrText;
+					break;
+				case "wifi2qr":
+					var ssid_san;
+					var wifipwd_san;
+					if (node.ssid) {
+						// sanitize ssid
+						ssid_san=sanitizeSpecialChar(node.ssid);
+					} else{
+						ssid_san="";
+					}
+					if (node.credentials.wifipwd){
+						// sanitize wifipwd
+						wifipwd_san=sanitizeSpecialChar(node.credentials.wifipwd);
+					}else{
+						wifipwd_san="";
+					}
+					qrencodemsg="WIFI:S:" + ssid_san +";T:" + node.wifitype + ";P:" + wifipwd_san + ";H:"+node.hiddenssid.toString()+";";
+					break;
+				case "phone2qr":
+					qrencodemsg="tel:" + node.phonenum;
+					break;
+				case "sms2qr":
+					var prefix="sms:";
+					if(node.smstext){
+						// documentation old at https://github.com/zxing/zxing/wiki/Barcode-Contents ?
+						// sms:+18005551212:This%20is%20my%20text%20message. Won't work with android 9 and earlier.
+						// Working version is:
+						// sms:+18005551212?&body=This%20is%20my%20text%20message.
+						qrencodemsg=prefix + node.smsphonenum +"?&body="+encodeURIComponent(node.smstext);
+					} else {
+						qrencodemsg=prefix + node.smsphonenum;
+					}
+					break;
+				case "email2qr":
+					var composemail="mailto:"+node.mailto;
+					if(node.mailsubject){
+						composemail= composemail + "?subject=" + encodeURIComponent(node.mailsubject);
+						if(node.mailbody){
+							composemail= composemail + "&body=" + encodeURIComponent(node.mailbody);
+						}
+					}
+					qrencodemsg=composemail;
+					break;
+				case "map2qr":
+					qrencodemsg="geo:" + node.latitude + "," + node.longitude;
+					break;
+				default:
+					qrencodemsg=node.text2qrText;
+			}
+		}else{
+			// get actionable text from input
+			qrencodemsg=node.qrcodeinput;
+		}
+
+		return qrencodemsg;
+	}
+
 	function requestQRCode(node,msg,callback){
+		var qrencodemsg;
 		try {
 			node.status({fill:"blue",shape:"dot",text:"molding QRcode.."});
-			var qrencodemsg="";
-			if(!node.qrcodeinput){
-				// no input, use configuration parameters from editor to create actionable text
-				switch (node.qrtype) {
-					case "text2qr":
-						qrencodemsg=node.text2qrText;
-						break;
-					case "wifi2qr":
-						var ssid_san;
-						var wifipwd_san;
-						if (node.ssid) {
-							// sanitize ssid
-							ssid_san=sanitizeSpecialChar(node.ssid);
-						} else{
-							ssid_san="";
-						}
-						if (node.credentials.wifipwd){
-							// sanitize wifipwd
-							wifipwd_san=sanitizeSpecialChar(node.credentials.wifipwd);
-						}else{
-							wifipwd_san="";
-						}
-						qrencodemsg="WIFI:S:" + ssid_san +";T:" + node.wifitype + ";P:" + wifipwd_san + ";H:"+node.hiddenssid.toString()+";";
-						break;
-					case "phone2qr":
-						qrencodemsg="tel:" + node.phonenum;
-						break;
-					case "sms2qr":
-						var prefix="sms:";
-						if(node.smstext){
-							// documentation old at https://github.com/zxing/zxing/wiki/Barcode-Contents ?
-							// sms:+18005551212:This%20is%20my%20text%20message. Won't work with android 9 and earlier.
-							// Working version is:
-							// sms:+18005551212?&body=This%20is%20my%20text%20message.
-							qrencodemsg=prefix + node.smsphonenum +"?&body="+encodeURIComponent(node.smstext);
-						} else {
-							qrencodemsg=prefix + node.smsphonenum;
-						}
-						break;
-					case "email2qr":
-						var composemail="mailto:"+node.mailto;
-						if(node.mailsubject){
-							composemail= composemail + "?subject=" + encodeURIComponent(node.mailsubject);
-							if(node.mailbody){
-								composemail= composemail + "&body=" + encodeURIComponent(node.mailbody);
-							}
-						}
-						qrencodemsg=composemail;
-						break;
-					case "map2qr":
-						qrencodemsg="geo:" + node.latitude + "," + node.longitude;
-						break;
-					default:
-						qrencodemsg=node.text2qrText;
-				}
-			}else{
-				// get actionable text from input
-				qrencodemsg=node.qrcodeinput;
-			}
+			qrencodemsg = qrcodeGenerateString(node);
 			// Colorize QRCode adding alpha-chan to RGB
 			var alphachan="FF";
 			var opts = {
