@@ -3,12 +3,12 @@ module.exports = function(RED) {
 
 	var QRCode = require('qrcode');
 
-	function sanitizeSpecialChar (valsan){
+	function sanitizeSpecialChar(valsan){
 		try{
-			var valsanret = valsanret.replace("\\", "\\\\");
+			var valsanret = valsan.replace("\\", "\\\\");
 			valsanret= valsanret.replace(":", "\\:");
 			valsanret= valsanret.replace(",", "\\,");
-			valsanret= valsan.replace(";", "\\;");
+			valsanret= valsanret.replace(";", "\\;");
 			return valsanret;
 		}catch (e) {
 			return "";
