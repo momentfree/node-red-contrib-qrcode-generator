@@ -5,7 +5,7 @@ module.exports = function(RED) {
 
 	function sanitizeSpecialChar (valsan){
 		try{
-			var valsanret = valsanret.replace("\\", "\\\\;");
+			var valsanret = valsanret.replace("\\", "\\\\");
 			valsanret= valsanret.replace(":", "\\:");
 			valsanret= valsanret.replace(",", "\\,");
 			valsanret= valsan.replace(";", "\\;");
