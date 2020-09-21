@@ -42,7 +42,8 @@
 					$("#node-input-tip").show();
 				}
 				return ret;
-			}}
+			}},
+			printstatus:{value:false}
 		},
 		credentials: {
 			wifipwd: {type:"password"}
@@ -91,6 +92,11 @@
 	<div class="form-row">
 		<label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
 		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+
+	<div class="form-row">
+			<input type="checkbox" id="node-input-printstatus" style="vertical-align:top; width:auto;">
+			<label for="node-input-printstatus" style="width:auto;"> Show actionable string in Status (max 150 char)</label>
 	</div>
 
 	<div class="form-row">
