@@ -5,10 +5,10 @@ module.exports = function(RED) {
 
 	function sanitizeSpecialChar (valsan){
 		try{
-			var valsanret = valsan.replace(";", "\\;");
+			var valsanret = valsanret.replace("\\", "\\\\;");
 			valsanret= valsanret.replace(":", "\\:");
 			valsanret= valsanret.replace(",", "\\,");
-			valsanret= valsanret.replace("\\", "\\\\;");
+			valsanret= valsan.replace(";", "\\;");
 			return valsanret;
 		}catch (e) {
 			return "";
