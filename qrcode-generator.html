@@ -21,13 +21,27 @@
 			latitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
 			longitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
 			colorlight:{value:"#ffffff",validate:function(v) {
+				const deltaCol=50;
 				var darkcol=$("#node-input-colordark").val() ? parseInt($("#node-input-colordark").val().replace(/^#/, ''), 16) : parseInt(this.colordark.replace(/^#/, ''), 16);
-				return darkcol + 50 < parseInt(v.replace(/^#/, ''), 16);
+				var ret=darkcol + deltaCol < parseInt(v.replace(/^#/, ''), 16);
+				if (ret){
+					$("#node-input-tip").hide();
+				}else{
+					$("#node-input-tip").show();
+				}
+				return ret;
 			}},
 			colordark:{value:"#000000",validate:function(v) {
+				const deltaCol=50;
 				var lightcol=$("#node-input-colorlight").val() ? parseInt($("#node-input-colorlight").val().replace(/^#/, ''), 16) : parseInt(this.colorlight.replace(/^#/, ''), 16);
 				// console.log(this.colordark + " - " + v);
-				return parseInt(v.replace(/^#/, ''), 16) + 50 < lightcol;
+				var ret=parseInt(v.replace(/^#/, ''), 16) + deltaCol < lightcol;
+				if (ret){
+					$("#node-input-tip").hide();
+				}else{
+					$("#node-input-tip").show();
+				}
+				return ret;
 			}}
 		},
 		credentials: {
@@ -42,6 +56,7 @@
 		oneditsave: function() {
 		},
 		oneditprepare: function() {
+			$("#node-input-tip").hide();
 			// hide all section
 			$(".qrcode-type").hide();
 			var qrtype=$('#node-input-qrtype').val() || "text2qr";
@@ -81,9 +96,9 @@
 	<div class="form-row">
 		<label for="node-input-colorlight"><i class="fa fa-paint-brush"></i> Light Color</label>
 		<input type="color" id="node-input-colorlight" style="width: 40px;height: 40px;border: none;">
-		<label style="width:80px"> </label>
-		<span > Dark Color</span>
+		<span style="margin-left:100px;"> Dark Color</span>
 		<input type="color" id="node-input-colordark" style="width: 40px;height: 40px;border: none;">
+		<div id="node-input-tip" class="form-tips" style="text-align: center;width:auto;" ><span>Colors are to tight! Tune better dark & light colors!</span></div>
 	</div>
 
 	<div class="form-row">
