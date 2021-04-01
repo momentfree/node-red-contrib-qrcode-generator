@@ -21,28 +21,30 @@
 			latitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
 			longitude:{value:"",validate:RED.validators.regex(/^(|-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,6})/)},
 			colorlight:{value:"#ffffff",validate:function(v) {
-				const deltaCol=50;
-				var darkcol=$("#node-input-colordark").val() ? parseInt($("#node-input-colordark").val().replace(/^#/, ''), 16) : parseInt(this.colordark.replace(/^#/, ''), 16);
-				var ret=darkcol + deltaCol < parseInt(v.replace(/^#/, ''), 16);
+				const deltaCol=30.0;
+				var color1 = "" + v;
+				const hasFullSpec1 = color1.length == 7;
+				var m1 = color1.substr(1).match(hasFullSpec1 ? /(\S{2})/g : /(\S{1})/g);
+				if (m1) var r1 = parseInt(m1[0] + (hasFullSpec1 ? '' : m1[0]), 16), g1 = parseInt(m1[1] + (hasFullSpec1 ? '' : m1[1]), 16), b1 = parseInt(m1[2] + (hasFullSpec1 ? '' : m1[2]), 16);
+				var brightnessBG=((r1*299)+(g1*587)+(b1*114))/1000;
+
+				var darkcol=$("#node-input-colordark").val() ? $("#node-input-colordark").val() : this.colordark;
+				var color2 = "" + darkcol;
+				const hasFullSpec2 = color2.length == 7;
+				var m2 = color2.substr(1).match(hasFullSpec2 ? /(\S{2})/g : /(\S{1})/g);
+				if (m2) var r2 = parseInt(m2[0] + (hasFullSpec2 ? '' : m2[0]), 16), g2 = parseInt(m2[1] + (hasFullSpec2 ? '' : m2[1]), 16), b2 = parseInt(m2[2] + (hasFullSpec2 ? '' : m2[2]), 16);
+				var brightnessQR=((r2*299)+(g2*587)+(b2*114))/1000;
+
+				var ret = (brightnessBG - deltaCol) > brightnessQR;
 				if (ret){
 					$("#node-input-tip").hide();
 				}else{
 					$("#node-input-tip").show();
 				}
+				//console.log(v + " - " + darkcol + " - " + brightnessBG + " - " + brightnessQR + " " + ret);
 				return ret;
 			}},
-			colordark:{value:"#000000",validate:function(v) {
-				const deltaCol=50;
-				var lightcol=$("#node-input-colorlight").val() ? parseInt($("#node-input-colorlight").val().replace(/^#/, ''), 16) : parseInt(this.colorlight.replace(/^#/, ''), 16);
-				// console.log(this.colordark + " - " + v);
-				var ret=parseInt(v.replace(/^#/, ''), 16) + deltaCol < lightcol;
-				if (ret){
-					$("#node-input-tip").hide();
-				}else{
-					$("#node-input-tip").show();
-				}
-				return ret;
-			}},
+			colordark:{value:"#000000"},
 			printstatus:{value:false}
 		},
 		credentials: {
@@ -100,11 +102,12 @@
 	</div>
 
 	<div class="form-row">
-		<label for="node-input-colorlight"><i class="fa fa-paint-brush"></i> Light Color</label>
+		<label for="node-input-colors"><i class="fa fa-paint-brush"></i> Colors</label>
+		<label for="node-input-colorlight">Background</label>
 		<input type="color" id="node-input-colorlight" style="width: 40px;height: 40px;border: none;">
-		<span style="margin-left:100px;"> Dark Color</span>
+		<span style="margin-left:70px;"> QRcode</span>
 		<input type="color" id="node-input-colordark" style="width: 40px;height: 40px;border: none;">
-		<div id="node-input-tip" class="form-tips" style="text-align: center;width:auto;" ><span>Colors are to tight! Tune better dark & light colors!</span></div>
+		<div id="node-input-tip" class="form-tips" style="text-align: center;width:auto;" ><span>Background color must be brighter then QRcode color! Tune better your colors!</span></div>
 	</div>
 
 	<div class="form-row">
