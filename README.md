@@ -17,7 +17,7 @@ You can render DataUri result, in html page with img element, using template nod
 ```
 or you can link output to [image viewer node](https://flows.nodered.org/node/node-red-contrib-image-tools) and get a preview in your Node-Red workspace panel.
 
-You can use different colors but keep in mind that light-color must be ligther than dark-color.
+You can use different colors but keep in mind that Background Color must be brighter than QRcode Color.
 
 ### Input
 `msg.qrcodeinput` [Custom](https://github.com/zxing/zxing/wiki/Barcode-Contents) string, it will be used instead of editor configuration. e.g.:
